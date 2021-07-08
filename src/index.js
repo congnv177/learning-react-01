@@ -1,17 +1,119 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const Welcome = ({user})=> {
+    return (
+        <div>
+            Chào <strong>{user.username}</strong>!
+        </div>
+    )
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+class LoginForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            username: '',
+            password: '',
+            submitUsernameError: '',
+            submitPasswordError: ''
+        };
+        this.handlePassChange = this.handlePassChange.bind(this);
+        this.handleUserChange = this.handleUserChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    render() {
+        return (
+            <form onSubmit={this.handleSubmit}>
+                <h3>Sign in</h3>
+                <input type="text" value={this.state.username} onChange={this.handleUserChange} placeholder="enter you username" />
+                <span>{this.state.submitUsernameError}</span>
+                <input type="password" value={this.state.password} onChange={this.handlePassChange} placeholder="enter password" />
+                <span>{this.state.submitPasswordError}</span>
+                <input type="submit" value="Login" />
+            </form>
+        )
+    }
+
+    handleUserChange(evt) {
+        this.setState({
+            username: evt.target.value,
+            submitUsernameError: ''
+        });
+    };
+
+    handlePassChange(evt) {
+        this.setState({
+            password: evt.target.value,
+            submitPasswordError: ''
+        });
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        if (this.state.username !== 'congnv') {
+            this.setState(state => ({
+                submitUsernameError: 'Username không chính xác'
+            }));
+            return;
+        }
+        if (this.state.password !== '123456') {
+            this.setState(state => ({
+                submitPasswordError: 'Password không chính xác'
+            }));
+            return;
+        }
+        this.setState(state => ({
+            submitUsernameError: '',
+            submitPasswordError: ''
+        }));
+        this.props.onSignIn(this.state.username, this.state.password);
+    }
+
+}
+
+
+class App extends React.Component {
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            user: null
+        }
+    }
+
+    signIn(username, password) {
+        this.setState({
+            user: {
+                username,
+                password,
+            }
+        })
+    }
+
+    signOut() {
+        this.setState({user: null})
+    }
+
+    render() {
+        return (
+            <div>
+                {
+                    (this.state.user) ?
+                        <Welcome
+                            user={this.state.user}
+                        />
+                        :
+                        <LoginForm
+                            onSignIn={this.signIn.bind(this)}
+                        />
+                }
+            </div>
+        )
+
+    }
+
+}
+
+ReactDOM.render(<App/>, document.getElementById("login-form"))
