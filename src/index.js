@@ -73,7 +73,6 @@ class LoginForm extends React.Component {
 
 }
 
-
 class App extends React.Component {
 
     constructor(props) {
@@ -90,10 +89,6 @@ class App extends React.Component {
                 password,
             }
         })
-    }
-
-    signOut() {
-        this.setState({user: null})
     }
 
     render() {
