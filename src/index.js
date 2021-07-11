@@ -1,114 +1,62 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-const Welcome = ({user})=> {
+const CategoryDetail = ({detail}) => {
     return (
         <div>
-            Chào <strong>{user.username}</strong>!
+            <div>STT: {detail.id}</div>
+            <div>Loại: {detail.name}</div>
+            <div>Mô tả: {detail.desc}</div>
         </div>
     )
 }
 
-class LoginForm extends React.Component {
+class CategoryItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: '',
-            password: '',
-            submitUsernameError: '',
-            submitPasswordError: ''
+            categoryItems: [
+                {id: 1, name: 'Tiểu thuyết', desc: 'là một thể loại văn xuôi có hư cấu, phản ánh bức tranh xã hội rộng lớn và những vấn đề của cuộc sống'},
+                {id: 2, name: 'Truyện tranh', desc: 'là một phương tiện được sử dụng để thể hiện ý tưởng bằng hình ảnh'},
+                {id: 3, name: 'Truyện thiếu nhi', desc: 'là những tác phẩm viết về thiếu nhi và viết cho thiếu nhi'},
+                {id: 4, name: 'Truyện người lớn', desc: 'là những tác phẩm viết về người lớn và viết cho người lớn'}
+            ],
+            itemById: null
         };
-        this.handlePassChange = this.handlePassChange.bind(this);
-        this.handleUserChange = this.handleUserChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.showDetail = this.showDetail.bind(this);
     }
 
-    render() {
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <h3>Sign in</h3>
-                <input type="text" value={this.state.username} onChange={this.handleUserChange} placeholder="enter you username" />
-                <span>{this.state.submitUsernameError}</span>
-                <input type="password" value={this.state.password} onChange={this.handlePassChange} placeholder="enter password" />
-                <span>{this.state.submitPasswordError}</span>
-                <input type="submit" value="Login" />
-            </form>
-        )
-    }
-
-    handleUserChange(evt) {
-        this.setState({
-            username: evt.target.value,
-            submitUsernameError: ''
-        });
-    };
-
-    handlePassChange(evt) {
-        this.setState({
-            password: evt.target.value,
-            submitPasswordError: ''
-        });
-    }
-
-    handleSubmit(e) {
+    showDetail(e) {
         e.preventDefault();
-        if (this.state.username !== 'congnv') {
-            this.setState(state => ({
-                submitUsernameError: 'Username không chính xác'
-            }));
-            return;
-        }
-        if (this.state.password !== '123456') {
-            this.setState(state => ({
-                submitPasswordError: 'Password không chính xác'
-            }));
-            return;
-        }
-        this.setState(state => ({
-            submitUsernameError: '',
-            submitPasswordError: ''
-        }));
-        this.props.onSignIn(this.state.username, this.state.password);
-    }
-
-}
-
-class App extends React.Component {
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            user: null
-        }
-    }
-
-    signIn(username, password) {
+        let id = e.target.getAttribute("data-id");
+        let item;
+        this.state.categoryItems.filter((categoryItem) => categoryItem.id == id).map(filtered => {item = filtered});
         this.setState({
-            user: {
-                username,
-                password,
-            }
-        })
+            itemById: item 
+        });
     }
 
     render() {
         return (
-            <div>
+            <div style={{marginLeft: '10em'}} >
                 {
-                    (this.state.user) ?
-                        <Welcome
-                            user={this.state.user}
-                        />
-                        :
-                        <LoginForm
-                            onSignIn={this.signIn.bind(this)}
-                        />
-                }
+                    (this.state.itemById) ?
+                        <CategoryDetail detail={this.state.itemById}/>
+                    :
+                    this.state.categoryItems.map((item, index) => (
+                        <p onClick={this.showDetail} key={item.id} data-id={item.id}>{item.name}</p>
+                    ))}
             </div>
-        )
-
+        );
     }
-
 }
 
-ReactDOM.render(<App/>, document.getElementById("login-form"))
+class CategoryList extends React.Component {
+    render() {
+        return <div>
+            <CategoryItem/>
+        </div>
+    }
+}
+
+ReactDOM.render(<CategoryList/>, document.getElementById("categories"))
