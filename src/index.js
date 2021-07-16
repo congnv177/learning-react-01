@@ -1,5 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import ReactPaginate from "react-paginate";
+import './index.css';
 
 const requestOptions = {
     method: 'GET',
@@ -16,16 +18,6 @@ export function authHeader() {
     };
 }
 
-const CategoryDetail = ({detail}) => {
-    return (
-        <div>
-            <div>STT: {detail.id}</div>
-            <div>Loại: {detail.name}</div>
-            <div>Mô tả: {detail.description}</div>
-        </div>
-    )
-}
-
 class CategoryItem extends React.Component {
     constructor(props) {
         super(props);
@@ -34,25 +26,28 @@ class CategoryItem extends React.Component {
             isLoader: false,
             categories: [],
             metadata: null,
-            itemById: null
+            itemById: null,
+            page: 1,
+            limit: 5,
+            pageCount: 0
         };
-        this.showDetail = this.showDetail.bind(this);
     }
 
-    componentDidMount() {
-        fetch("http://localhost:8080/admin/categories?page=1&limit=5", requestOptions)
+    componentDidMount(pageOf) {
+        const page = pageOf == null ? this.state.page : pageOf;
+        const limit = this.state.limit;
+        fetch(`http://localhost:8080/admin/categories?page=${page}&limit=${limit}`, requestOptions)
             .then(res => res.json())
             .then(
                 (result) => {
                     this.setState({
                         isLoaded: true,
                         categories: result.categories,
-                        metadata: result.metadata
+                        metadata: result.metadata,
+                        pageCount: Math.floor(result.metadata.total / result.metadata.limit)
+                            + (Math.floor(result.metadata.total % result.metadata.limit) > 0 ? 1 : 0)
                     });
                 },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
                 (error) => {
                     this.setState({
                         isLoaded: true,
@@ -62,8 +57,12 @@ class CategoryItem extends React.Component {
             )
     }
 
+    handlePageClick = (event) => {
+        this.componentDidMount(event.selected + 1);
+    }
+
     render() {
-        const { error, isLoaded, categories } = this.state;
+        const { error, isLoaded } = this.state;
         if (error) {
             return <div>Error: {error.message}</div>;
         } else if (!isLoaded) {
@@ -71,40 +70,37 @@ class CategoryItem extends React.Component {
         } else {
             return (
                 <div style={{marginLeft: '10em'}} >
-                    {
-                        (this.state.itemById) ?
-                            <CategoryDetail detail={this.state.itemById}/>
-                            :
+                    <table className='Table'>
+                        <thead>
+                        <tr>
+                            <th className='headerIndex'>STT</th>
+                            <th className='headerName'>Tên</th>
+                            <th className='headerDescription'>Mô tả</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {
                             this.state.categories.map((item, index) => (
-                                <p onClick={this.showDetail} key={item.id} data-id={item.id}>{item.name}</p>
-                            ))}
+                                <tr key={item.id}>
+                                    <td className='lineIndex'>{item.id}</td>
+                                    <td className='lineName'>{item.name}</td>
+                                    <td className='lineDescription'>{item.description}</td>
+                                </tr>
+                            ))
+                        }
+                        </tbody>
+                    </table>
+                    <ReactPaginate
+                        previousLabel={'prev'}
+                        nextLabel={'next'}
+                        pageCount={this.state.pageCount}
+                        onPageChange={this.handlePageClick}
+                        containerClassName={'pagination'}
+                        activeClassName={'active'}
+                    />
                 </div>
             );
         }
-    }
-
-    // render() {
-    //     return (
-    //         <div style={{marginLeft: '10em'}} >
-    //             {
-    //                 (this.state.itemById) ?
-    //                     <CategoryDetail detail={this.state.itemById}/>
-    //                     :
-    //                     this.state.categoryItems.map((item, index) => (
-    //                         <p onClick={this.showDetail} key={item.id} data-id={item.id}>{item.name}</p>
-    //                     ))}
-    //         </div>
-    //     );
-    // }
-
-    showDetail(e) {
-        e.preventDefault();
-        let id = e.target.getAttribute("data-id");
-        let item;
-        this.state.categories.filter((category) => category.id == id).map(filtered => {item = filtered});
-        this.setState({
-            itemById: item 
-        });
     }
 }
 
