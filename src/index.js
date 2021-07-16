@@ -3,12 +3,17 @@ import ReactDOM from "react-dom";
 
 const requestOptions = {
     method: 'GET',
-    headers: authHeader()
+    headers: authHeader(),
     // headers: new Headers({'Access-Control-Allow-Origin': '*', 'cookie': '_admin_session_id=882009f8-aaf0-e1e0-fcdb-a3cd60222584'})
 };
 
 export function authHeader() {
-    return { cookie: `_admin_session_id=882009f8-aaf0-e1e0-fcdb-a3cd60222584` };
+    return {
+        //'cookie': '_admin_session_id=ae71ad60-00a0-5ae5-ff65-2f32416b61c7',
+        //'Content-Type': 'application/json'
+        'Access-Control-Allow-Origin': 'http://localhost:8080',
+        "Access-Control-Allow-Credentials": 'true'
+    };
 }
 
 const CategoryDetail = ({detail}) => {
@@ -16,7 +21,7 @@ const CategoryDetail = ({detail}) => {
         <div>
             <div>STT: {detail.id}</div>
             <div>Loại: {detail.name}</div>
-            <div>Mô tả: {detail.desc}</div>
+            <div>Mô tả: {detail.description}</div>
         </div>
     )
 }
@@ -27,20 +32,22 @@ class CategoryItem extends React.Component {
         this.state = {
             error: null,
             isLoader: false,
-            categoryItems: [],
+            categories: [],
+            metadata: null,
             itemById: null
         };
         this.showDetail = this.showDetail.bind(this);
     }
 
     componentDidMount() {
-        fetch("10.10.2.87:8765/admin/categories.json", requestOptions)
+        fetch("http://localhost:8080/admin/categories?page=1&limit=5", requestOptions)
             .then(res => res.json())
             .then(
                 (result) => {
                     this.setState({
                         isLoaded: true,
-                        categoryItems: result.categories
+                        categories: result.categories,
+                        metadata: result.metadata
                     });
                 },
                 // Note: it's important to handle errors here
@@ -56,7 +63,7 @@ class CategoryItem extends React.Component {
     }
 
     render() {
-        const { error, isLoaded, items } = this.state;
+        const { error, isLoaded, categories } = this.state;
         if (error) {
             return <div>Error: {error.message}</div>;
         } else if (!isLoaded) {
@@ -68,7 +75,7 @@ class CategoryItem extends React.Component {
                         (this.state.itemById) ?
                             <CategoryDetail detail={this.state.itemById}/>
                             :
-                            this.state.categoryItems.map((item, index) => (
+                            this.state.categories.map((item, index) => (
                                 <p onClick={this.showDetail} key={item.id} data-id={item.id}>{item.name}</p>
                             ))}
                 </div>
@@ -94,7 +101,7 @@ class CategoryItem extends React.Component {
         e.preventDefault();
         let id = e.target.getAttribute("data-id");
         let item;
-        this.state.categoryItems.filter((categoryItem) => categoryItem.id == id).map(filtered => {item = filtered});
+        this.state.categories.filter((category) => category.id == id).map(filtered => {item = filtered});
         this.setState({
             itemById: item 
         });
