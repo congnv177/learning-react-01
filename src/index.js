@@ -33,9 +33,10 @@ class CategoryItem extends React.Component {
         };
     }
 
-    componentDidMount(pageOf) {
+    componentDidMount(pageOf) { // tìm hiểu về life cycle của 1 component
         const page = pageOf == null ? this.state.page : pageOf;
         const limit = this.state.limit;
+        // có thể dùng async await
         fetch(`http://localhost:8080/admin/categories?page=${page}&limit=${limit}`, requestOptions)
             .then(res => res.json())
             .then(
@@ -89,7 +90,7 @@ class CategoryItem extends React.Component {
                             ))
                         }
                         </tbody>
-                    </table>
+                    </table> // tự tạo 1 component paginate theo các feature đang sử dụng để hiểu được bản chất
                     <ReactPaginate
                         previousLabel={'prev'}
                         nextLabel={'next'}
