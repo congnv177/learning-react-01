@@ -25,7 +25,7 @@ class LoginForm extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
+            <form onSubmit={this.handleSubmit}> // tìm hiểu về Form và cách lấy data từ trong Form
                 <h3>Sign in</h3>
                 <input type="text" value={this.state.username} onChange={this.handleUserChange} placeholder="enter you username" />
                 <span>{this.state.submitUsernameError}</span>
@@ -101,7 +101,7 @@ class App extends React.Component {
                         />
                         :
                         <LoginForm
-                            onSignIn={this.signIn.bind(this)}
+                            onSignIn={this.signIn.bind(this)} // tìm hiểu cách viết khác ko cần this
                         />
                 }
             </div>
