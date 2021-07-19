@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
+// bổ sung thêm nút back ra trang danh sách
 const CategoryDetail = ({detail}) => {
     return (
         <div>
@@ -26,7 +27,7 @@ class CategoryItem extends React.Component {
         this.showDetail = this.showDetail.bind(this);
     }
 
-    showDetail(e) {
+    showDetail(e) { // sửa lại truyền id vào
         e.preventDefault();
         let id = e.target.getAttribute("data-id");
         let item;
