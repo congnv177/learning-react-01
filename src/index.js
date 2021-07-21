@@ -25,7 +25,12 @@ class LoginForm extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}> // tìm hiểu về Form và cách lấy data từ trong Form
+            /**
+             * Form là đối tượng HTML đc sử dụng để tương tác với người dùng
+             * ngoài cách sd controlled components (https://reactjs.org/docs/forms.html#controlled-components)
+             * còn có thể sd uncontrolled components (https://reactjs.org/docs/uncontrolled-components.html) để lấy dữ liệu từ trong form
+             */
+            <form onSubmit={this.handleSubmit}>
                 <h3>Sign in</h3>
                 <input type="text" value={this.state.username} onChange={this.handleUserChange} placeholder="enter you username" />
                 <span>{this.state.submitUsernameError}</span>
