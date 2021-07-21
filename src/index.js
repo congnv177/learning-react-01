@@ -3,11 +3,18 @@ import ReactDOM from "react-dom";
 
 // bổ sung thêm nút back ra trang danh sách
 const CategoryDetail = ({detail}) => {
+    const handleClick = () => {
+        return <div>
+            <CategoryItem/>
+        </div>
+    }
+    
     return (
         <div>
             <div>STT: {detail.id}</div>
             <div>Loại: {detail.name}</div>
             <div>Mô tả: {detail.desc}</div>
+            <input type="submit" value="Back" onClick={handleClick}/>
         </div>
     )
 }
@@ -24,12 +31,9 @@ class CategoryItem extends React.Component {
             ],
             itemById: null
         };
-        this.showDetail = this.showDetail.bind(this);
     }
 
-    showDetail(e) { // sửa lại truyền id vào
-        e.preventDefault();
-        let id = e.target.getAttribute("data-id");
+    showDetail(id) {
         let item;
         this.state.categoryItems.filter((categoryItem) => categoryItem.id == id).map(filtered => {item = filtered});
         this.setState({
@@ -44,8 +48,8 @@ class CategoryItem extends React.Component {
                     (this.state.itemById) ?
                         <CategoryDetail detail={this.state.itemById}/>
                     :
-                    this.state.categoryItems.map((item, index) => (
-                        <p onClick={this.showDetail} key={item.id} data-id={item.id}>{item.name}</p>
+                    this.state.categoryItems.map(item => (
+                        <p onClick={() => this.showDetail(item.id)}>{item.name}</p>
                     ))}
             </div>
         );
