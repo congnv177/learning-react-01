@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import ReactPaginate from "react-paginate";
 import './index.css';
+import Pagination from "./component/Pagination";
+import MyPagination from "./component/MyPagination";
 
 const requestOptions = {
     method: 'GET',
@@ -29,11 +31,13 @@ class CategoryItem extends React.Component {
             itemById: null,
             page: 1,
             limit: 5,
-            pageCount: 0
+            pageCount: 0,
+            totalPage: 0,
         };
     }
 
-    componentDidMount(pageOf) { // tìm hiểu về life cycle của 1 component
+    /* tìm hiểu về life cycle của 1 component */
+    componentDidMount(pageOf) {
         const page = pageOf == null ? this.state.page : pageOf;
         const limit = this.state.limit;
         // có thể dùng async await
@@ -46,7 +50,8 @@ class CategoryItem extends React.Component {
                         categories: result.categories,
                         metadata: result.metadata,
                         pageCount: Math.floor(result.metadata.total / result.metadata.limit)
-                            + (Math.floor(result.metadata.total % result.metadata.limit) > 0 ? 1 : 0)
+                            + (Math.floor(result.metadata.total % result.metadata.limit) > 0 ? 1 : 0),
+                        totalPage: result.metadata.total,
                     });
                 },
                 (error) => {
@@ -61,6 +66,8 @@ class CategoryItem extends React.Component {
     handlePageClick = (event) => {
         this.componentDidMount(event.selected + 1);
     }
+
+    const paginate = pageNumber => setCurrentPage(pageNumber);
 
     render() {
         const { error, isLoaded } = this.state;
@@ -90,14 +97,20 @@ class CategoryItem extends React.Component {
                             ))
                         }
                         </tbody>
-                    </table> // tự tạo 1 component paginate theo các feature đang sử dụng để hiểu được bản chất
-                    <ReactPaginate
-                        previousLabel={'prev'}
-                        nextLabel={'next'}
-                        pageCount={this.state.pageCount}
-                        onPageChange={this.handlePageClick}
-                        containerClassName={'pagination'}
-                        activeClassName={'active'}
+                    </table>
+                    {/*tự tạo 1 component paginate theo các feature đang sử dụng để hiểu được bản chất*/}
+                    {/*<ReactPaginate*/}
+                    {/*    previousLabel={'prev'}*/}
+                    {/*    nextLabel={'next'}*/}
+                    {/*    pageCount={this.state.pageCount}*/}
+                    {/*    onPageChange={this.handlePageClick}*/}
+                    {/*    containerClassName={'pagination'}*/}
+                    {/*    activeClassName={'active'}*/}
+                    {/*/>*/}
+                    <MyPagination
+                        postsPerPage={this.state.limit}
+                        totalPosts={this.state.totalPage}
+                        paginate={paginate}
                     />
                 </div>
             );
