@@ -1,24 +1,24 @@
 import React from 'react';
 
-const MyPagination = ({ postsPerPage, totalPosts, onPageChange }) => {
+const MyPagination = ({ limit, totalPosts, handleClick }) => {
     const pageNumbers = [];
 
-    for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(totalPosts / limit); i++) {
         pageNumbers.push(i);
     }
 
     return (
         <nav>
             <ul className='pagination'>
-                <a style={{marginTop: "-10px", marginBottom: "10px"}}>prev</a>
+                {/*<a style={{marginTop: "-10px", marginBottom: "10px"}}>prev</a>*/}
                 {pageNumbers.map(number => (
                     <li key={number} className='page-item'>
-                        <a onClick={() => onPageChange(number)} href='' className='page-link'>
+                        <a onClick={() => handleClick(number)} href='#' className='page-link'>
                             {number}
                         </a>
                     </li>
                 ))}
-                <a style={{marginTop: "-10px", marginBottom: "10px"}}>next</a>
+                {/*<a style={{marginTop: "-10px", marginBottom: "10px"}}>next</a>*/}
             </ul>
         </nav>
     );
